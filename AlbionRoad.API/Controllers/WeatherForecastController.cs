@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using AlbionRoad.Domain.Models;
+using System.Text.Json;
 
 namespace AlbionRoad.API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -18,15 +20,13 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    [HttpGet("teste")]
+    public IList<Item> Get()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateTime.Now.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+        //C:\Users\mathe\Projects\albion-road\api\AlbionRoad.Resources\items.json
+        StreamReader r = new StreamReader("../AlbionRoad.Resources/items.json");
+        string toJson = r.ReadToEnd();
+        IList<Item> items = JsonSerializer.Deserialize<List<Item>>(toJson);
+        return items;
     }
 }

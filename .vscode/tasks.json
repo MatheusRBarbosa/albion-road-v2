@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/BeeBee.API/BeeBee.API.csproj",
+                "${workspaceFolder}/AlbionRoad.API/AlbionRoad.API.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/BeeBee.API/BeeBee.API.csproj",
+                "${workspaceFolder}/AlbionRoad.API/AlbionRoad.API.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "--project",
-                "${workspaceFolder}/BeeBee.API/BeeBee.API.csproj"
+                "${workspaceFolder}/AlbionRoad.API/AlbionRoad.API.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
