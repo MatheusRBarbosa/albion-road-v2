@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlbionRoad.Domain\AlbionRoad.Domain.csproj" />
-    <ProjectReference Include="..\AlbionRoad.Infra.Database\AlbionRoad.Infra.Database.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "release": "standard-version"
+    "release": "standard-version",
+    "db:create": "",
+    "db:kill": "",
+    "db:start": "",
+    "db:stop": ""
   },
   "repository": {
     "type": "git",
