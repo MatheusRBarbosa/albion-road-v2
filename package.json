@@ -1,0 +1,21 @@
+{
+  "name": "albion-road",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "release": "standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatheusRBarbosa/albion-road-v2.git"
+  },
+  "author": "Matheus Barbosa",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "husky": "^8.0.1",
+    "standard-version": "^9.5.0"
+  }
+}
