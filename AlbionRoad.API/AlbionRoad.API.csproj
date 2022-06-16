@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AlbionRoad.Application\AlbionRoad.Application.csproj" />
     <ProjectReference Include="..\AlbionRoad.Domain\AlbionRoad.Domain.csproj" />
+    <ProjectReference Include="..\AlbionRoad.Resources\AlbionRoad.Resources.csproj" />
   </ItemGroup>
 
 </Project>
