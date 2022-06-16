@@ -15,9 +15,9 @@ public class RouteController : ControllerBase
     }
 
     [HttpGet("travel")]
-    public IActionResult Travel()
+    public async Task<IActionResult> Travel()
     {
-        travelHandler.Travel();
-        return Ok();
+        var result = await travelHandler.Travel();
+        return Ok(result);
     }
 }

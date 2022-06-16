@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using System.Net.Http.Json;
 
 using AlbionRoad.Domain.Models;
+using AlbionRoad.Domain.Interfaces.Services;
 using AlbionRoad.Resources.Configs;
 
 namespace AlbionRoad.Application.Handlers;
@@ -13,23 +13,27 @@ public class TravelHandler
     private IMapper mapper;
     private AlbionData albionData;
     private IHttpClientFactory httpFactory;
+    private IItemService itemService;
 
     public TravelHandler(
         IMapper mapper,
         IOptions<AlbionData> albionData,
-        IHttpClientFactory httpFactory
+        IHttpClientFactory httpFactory,
+        IItemService itemService
     )
     {
         this.mapper = mapper;
         this.albionData = albionData.Value;
         this.httpFactory = httpFactory;
+        this.itemService = itemService;
     }
 
     public async Task<dynamic> Travel()
     {
         var http = httpFactory.CreateClient();
-        var endpoint = albionData.BasePath + albionData.Prices + "T4_BAG";
+        var itemsQuery = itemService.GetItemQueryParams();
 
+        var endpoint = albionData.BasePath + albionData.Prices + itemsQuery;
         var response = await http.GetFromJsonAsync<IList<Price>>(endpoint);
 
         return response!;

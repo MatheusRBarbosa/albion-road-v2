@@ -1,5 +1,7 @@
 using AlbionRoad.Resources.Configs;
 using AlbionRoad.Application.Handlers;
+using AlbionRoad.Domain.Interfaces.Services;
+using AlbionRoad.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,7 @@ builder.Services.Configure<AlbionData>(albionData);
 
 // DI
 builder.Services.AddScoped<TravelHandler>();
+builder.Services.AddScoped<IItemService, ItemService>();
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
