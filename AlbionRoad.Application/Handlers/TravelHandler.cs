@@ -31,10 +31,13 @@ public class TravelHandler
     public async Task<dynamic> Travel()
     {
         var http = httpFactory.CreateClient();
-        var itemsQuery = itemService.GetItemQueryParams();
+        var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
 
-        var endpoint = albionData.BasePath + albionData.Prices + itemsQuery;
-        var response = await http.GetFromJsonAsync<IList<Price>>(endpoint);
+        //TODO: Pra cada item em itemsQuery disparar uma request assincrona.
+        //Nao eh preciso uma request esperar a outra, eu so preciso do resultado de todas
+
+        // var endpoint = albionData.BasePath + albionData.Prices + itemsQuery;
+        // var response = await http.GetFromJsonAsync<IList<Price>>(endpoint);
 
         return response!;
     }

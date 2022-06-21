@@ -6,15 +6,26 @@ namespace AlbionRoad.Domain.Services;
 
 public class ItemService : IItemService
 {
-    public string GetItemQueryParams()
+    public IList<string> GetItemQueryParams(int batchSize)
     {
         var itemsIds = GetItemsIds();
-        return String.Join(",", itemsIds.ToArray());
-    }
+        IList<string> batches = new List<string>();
 
-    public IList<string> GetItemQueryParams(bool baches)
-    {
-        throw new NotImplementedException();
+        var batch = new List<string>();
+        foreach (var item in itemsIds)
+        {
+            if (batch.Count < batchSize)
+            {
+                batch.Add(item);
+            }
+            else
+            {
+                batches.Add(string.Join(",", batch));
+                batch = new List<string>();
+            }
+        }
+
+        return batches;
     }
 
     private IList<string> GetItemsIds()
