@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 
 using AlbionRoad.Domain.Models;
+using AlbionRoad.Domain.Enums;
 using AlbionRoad.Domain.Interfaces.Services;
 using AlbionRoad.Resources.Configs;
 
@@ -28,17 +29,37 @@ public class TravelHandler
         this.itemService = itemService;
     }
 
-    public async Task<dynamic> Travel()
+    public async Task<IList<Profit>> Travel(int from, int to)
     {
+        //TODO: mover essa logica pra um middleware
+        ValidCities(from, to);
+
         var http = httpFactory.CreateClient();
         var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
+        var tasks = new List<Task<List<Price>>>();
 
-        //TODO: Pra cada item em itemsQuery disparar uma request assincrona.
-        //Nao eh preciso uma request esperar a outra, eu so preciso do resultado de todas
+        foreach (string item in itemsQuery)
+        {
+            var endpoint = albionData.BasePath + albionData.Prices + item;
+            tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
+        }
 
-        // var endpoint = albionData.BasePath + albionData.Prices + itemsQuery;
-        // var response = await http.GetFromJsonAsync<IList<Price>>(endpoint);
+        var response = (await Task.WhenAll(tasks))
+            .SelectMany(x => x)
+            .ToList();
 
-        return response!;
+        var profit = itemService.GetItemsProfit(response);
+        return profit;
+    }
+
+    private void ValidCities(int from, int to)
+    {
+        var fromValid = Enum.IsDefined(typeof(City), from);
+        var toValid = Enum.IsDefined(typeof(City), to);
+
+        if (!fromValid || !toValid)
+        {
+            throw new KeyNotFoundException("Could not find these cities");
+        }
     }
 }

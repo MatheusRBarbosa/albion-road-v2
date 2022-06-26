@@ -14,10 +14,11 @@ public class RouteController : ControllerBase
         this.travelHandler = travelHandler;
     }
 
-    [HttpGet("travel")]
-    public async Task<IActionResult> Travel()
+    [HttpGet("travel/from/{from}/to/{to}")]
+    public async Task<IActionResult> Travel(int from, int to)
     {
-        var result = await travelHandler.Travel();
+        //TODO: Middleware para filtrar id das cidades antes de entrar no handler
+        var result = await travelHandler.Travel(from, to);
         return Ok(result);
     }
 }

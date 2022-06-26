@@ -28,11 +28,25 @@ public class ItemService : IItemService
         return batches;
     }
 
+    public IList<Profit> GetItemsProfit(IList<Price> prices)
+    {
+        var profits = new List<Profit>();
+
+        foreach (var price in prices)
+        {
+            // Colocar na lista enquanto o tamanho for menos 10
+            // Mas se o tamanho for 10, trocar apenas de o profit.value for maior
+            // Fazer isso apenas se as cidades tiverem relacao com from e to
+        }
+
+        return profits;
+    }
+
     private IList<string> GetItemsIds()
     {
         var items = GetItemsFromFile();
         var itemIds = items
-            .Where(i => i.UniqueName[0] == 'T')
+            .Where(i => i.Eligible())
             .Select(i => i.UniqueName)
             .ToList();
 
