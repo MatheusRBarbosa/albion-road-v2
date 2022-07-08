@@ -31,8 +31,7 @@ public class TravelHandler
 
     public async Task<IList<Profit>> Travel(int from, int to)
     {
-        //TODO: mover essa logica pra um middleware
-        ValidCities(from, to);
+        var route = GetRoute(from, to);
 
         var http = httpFactory.CreateClient();
         var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
@@ -40,6 +39,8 @@ public class TravelHandler
 
         foreach (string item in itemsQuery)
         {
+            //TODO: Passar cidades no request
+            // EX: https://www.albion-online-data.com/api/v2/stats/prices/T4_BAG,T5_BAG?locations=Caerleon,Bridgewatch&qualities=2
             var endpoint = albionData.BasePath + albionData.Prices + item;
             tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
         }
@@ -48,18 +49,24 @@ public class TravelHandler
             .SelectMany(x => x)
             .ToList();
 
-        var profit = itemService.GetItemsProfit(response);
+
+        var profit = itemService.GetItemsProfit(response, route);
         return profit;
     }
 
-    private void ValidCities(int from, int to)
+    private Route GetRoute(int from, int to)
     {
-        var fromValid = Enum.IsDefined(typeof(City), from);
-        var toValid = Enum.IsDefined(typeof(City), to);
+        var fromValid = Enum.IsDefined(typeof(CityEnum), from);
+        var toValid = Enum.IsDefined(typeof(CityEnum), to);
 
         if (!fromValid || !toValid)
         {
             throw new KeyNotFoundException("Could not find these cities");
         }
+
+        var fromCity = new City { Id = from, Name = Enum.GetName((CityEnum)from)! };
+        var toCity = new City { Id = to, Name = Enum.GetName((CityEnum)to)! };
+
+        return new Route { From = fromCity, To = toCity };
     }
 }

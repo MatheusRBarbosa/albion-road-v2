@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Diagnostics;
 using AlbionRoad.Domain.Models;
 using AlbionRoad.Domain.Interfaces.Services;
 
@@ -28,17 +29,38 @@ public class ItemService : IItemService
         return batches;
     }
 
-    public IList<Profit> GetItemsProfit(IList<Price> prices)
+    public IList<Profit> GetItemsProfit(IList<Price> prices, Route route)
     {
+        Stopwatch watch = new Stopwatch();
+        watch.Start();
+        (var pricesFrom, var pricesTo) = SanitizePrices(prices, route);
+
         var profits = new List<Profit>();
 
-        foreach (var price in prices)
-        {
-            // Colocar na lista enquanto o tamanho for menos 10
-            // Mas se o tamanho for 10, trocar apenas de o profit.value for maior
-            // Fazer isso apenas se as cidades tiverem relacao com from e to
-        }
+        // Performance parallel with sanitized prices: 3 - 4s
+        // Performance non-parallel with sanitezed prices: 13s
+        // Performance parallel with non-sanitezed prices (using same for to saniteze and calc): 24s
 
+        Parallel.For(0, pricesFrom.Count, i =>
+        {
+            var priceFrom = pricesFrom[i];
+            var priceTo = pricesTo.First(to => to.ItemId == priceFrom.ItemId);
+            var profitValue = priceFrom.SellPriceMin - priceTo.SellPriceMin;
+            var profit = new Profit
+            {
+                Value = profitValue,
+                ItemId = priceFrom.ItemId,
+                From = route.From.Name,
+                To = route.To.Name
+            };
+
+            profits.Add(profit);
+
+        });
+
+        //TODO: Ordernar por profit e pegar os 10 primeiros
+        watch.Stop();
+        Console.WriteLine($"[Performance] Elapsed: {watch.ElapsedMilliseconds}ms");
         return profits;
     }
 
@@ -60,5 +82,38 @@ public class ItemService : IItemService
         IList<Item> items = JsonSerializer.Deserialize<List<Item>>(toJson)!;
 
         return items;
+    }
+
+    private (IList<Price>, IList<Price>) SanitizePrices(IList<Price> prices, Route route)
+    {
+        var sanitizedPricesFrom = new List<Price>();
+        var sanitizedPricesTo = new List<Price>();
+
+        foreach (var price in prices)
+        {
+            var itemCity = price.City.Replace(" ", String.Empty);
+            if (itemCity == route.From.Name)
+            {
+                sanitizedPricesFrom.Add(price);
+            }
+            else if (itemCity == route.To.Name)
+            {
+                sanitizedPricesTo.Add(price);
+            }
+        }
+        // Parallel.ForEach(prices, price =>
+        // {
+        //     var itemCity = price.City.Replace(" ", String.Empty);
+        //     if (itemCity == route.From.Name)
+        //     {
+        //         sanitizedPricesFrom.Add(price);
+        //     }
+        //     else if (itemCity == route.To.Name)
+        //     {
+        //         sanitizedPricesTo.Add(price);
+        //     }
+        // });
+
+        return (sanitizedPricesFrom, sanitizedPricesTo);
     }
 }

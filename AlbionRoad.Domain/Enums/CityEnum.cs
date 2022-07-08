@@ -1,5 +1,5 @@
 namespace AlbionRoad.Domain.Enums;
-public enum City
+public enum CityEnum
 {
     Thetford = 1,
     FortSterling = 2,
