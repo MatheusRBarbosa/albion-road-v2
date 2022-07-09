@@ -17,7 +17,6 @@ public class RouteController : ControllerBase
     [HttpGet("travel/from/{from}/to/{to}")]
     public async Task<IActionResult> Travel(int from, int to)
     {
-        //TODO: Middleware para filtrar id das cidades antes de entrar no handler
         var result = await travelHandler.Travel(from, to);
         return Ok(result);
     }

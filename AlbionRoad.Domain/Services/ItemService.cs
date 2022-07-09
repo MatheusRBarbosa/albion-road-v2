@@ -48,7 +48,9 @@ public class ItemService : IItemService
             var profitValue = priceFrom.SellPriceMin - priceTo.SellPriceMin;
             var profit = new Profit
             {
-                Value = profitValue,
+                ProfitValue = profitValue,
+                BuyValue = priceFrom.SellPriceMin,
+                SellValue = priceTo.SellPriceMin,
                 ItemId = priceFrom.ItemId,
                 From = route.From.Name,
                 To = route.To.Name
@@ -58,10 +60,13 @@ public class ItemService : IItemService
 
         });
 
-        //TODO: Ordernar por profit e pegar os 10 primeiros
         watch.Stop();
         Console.WriteLine($"[Performance] Elapsed: {watch.ElapsedMilliseconds}ms");
-        return profits;
+
+        return profits
+                .OrderByDescending(profit => profit.ProfitValue)
+                .Take(15)
+                .ToList();
     }
 
     private IList<string> GetItemsIds()

@@ -39,9 +39,7 @@ public class TravelHandler
 
         foreach (string item in itemsQuery)
         {
-            //TODO: Passar cidades no request
-            // EX: https://www.albion-online-data.com/api/v2/stats/prices/T4_BAG,T5_BAG?locations=Caerleon,Bridgewatch&qualities=2
-            var endpoint = albionData.BasePath + albionData.Prices + item;
+            var endpoint = $"{albionData.BasePath}/{albionData.Prices}/{item}?{route.ToUrlQueryParam}";
             tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
         }
 
