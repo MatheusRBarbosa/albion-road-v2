@@ -7,8 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var albionData = builder.Configuration.GetSection("AlbionData");
-builder.Services.Configure<AlbionData>(albionData);
+
+var albionData = builder.Configuration.GetSection(AlbionDataSettings.SECTION);
+builder.Services.Configure<AlbionDataSettings>(albionData);
+
+var redisSection = builder.Configuration.GetSection(RedisSettings.SECTION);
+builder.Services.Configure<RedisSettings>(redisSection);
+
+var redisSettings = redisSection.Get<RedisSettings>();
+
+// Redis
+builder.Services.AddStackExchangeRedisCache(opts =>
+{
+    opts.Configuration = $"localhost:6379";
+});
+
+builder.Services.AddDistributedMemoryCache();
 
 // DI
 builder.Services.AddScoped<TravelHandler>();
