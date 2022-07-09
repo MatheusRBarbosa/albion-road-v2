@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Diagnostics;
 using AlbionRoad.Domain.Models;
 using AlbionRoad.Domain.Interfaces.Services;
 
@@ -31,15 +30,10 @@ public class ItemService : IItemService
 
     public IList<Profit> GetItemsProfit(IList<Price> prices, Route route)
     {
-        Stopwatch watch = new Stopwatch();
-        watch.Start();
+
         (var pricesFrom, var pricesTo) = SanitizePrices(prices, route);
 
         var profits = new List<Profit>();
-
-        // Performance parallel with sanitized prices: 3 - 4s
-        // Performance non-parallel with sanitezed prices: 13s
-        // Performance parallel with non-sanitezed prices (using same for to saniteze and calc): 24s
 
         Parallel.For(0, pricesFrom.Count, i =>
         {
@@ -60,13 +54,13 @@ public class ItemService : IItemService
 
         });
 
-        watch.Stop();
-        Console.WriteLine($"[Performance] Elapsed: {watch.ElapsedMilliseconds}ms");
-
-        return profits
-                .OrderByDescending(profit => profit.ProfitValue)
+        profits = profits
+                .Where(p => p.BuyValue != 0 && p.SellValue != 0)
+                .OrderByDescending(p => p.ProfitValue)
                 .Take(15)
                 .ToList();
+
+        return profits;
     }
 
     private IList<string> GetItemsIds()
@@ -106,18 +100,6 @@ public class ItemService : IItemService
                 sanitizedPricesTo.Add(price);
             }
         }
-        // Parallel.ForEach(prices, price =>
-        // {
-        //     var itemCity = price.City.Replace(" ", String.Empty);
-        //     if (itemCity == route.From.Name)
-        //     {
-        //         sanitizedPricesFrom.Add(price);
-        //     }
-        //     else if (itemCity == route.To.Name)
-        //     {
-        //         sanitizedPricesTo.Add(price);
-        //     }
-        // });
 
         return (sanitizedPricesFrom, sanitizedPricesTo);
     }

@@ -8,7 +8,8 @@
     "db:create": "",
     "db:kill": "",
     "db:start": "",
-    "db:stop": ""
+    "db:stop": "",
+    "stack:create": "docker-compose -p albion-road up -d"
   },
   "repository": {
     "type": "git",

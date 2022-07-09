@@ -37,16 +37,15 @@ public class TravelHandler
         var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
         var tasks = new List<Task<List<Price>>>();
 
-        foreach (string item in itemsQuery)
+        Parallel.ForEach(itemsQuery, item =>
         {
             var endpoint = $"{albionData.BasePath}/{albionData.Prices}/{item}?{route.ToUrlQueryParam}";
             tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
-        }
+        });
 
         var response = (await Task.WhenAll(tasks))
             .SelectMany(x => x)
             .ToList();
-
 
         var profit = itemService.GetItemsProfit(response, route);
         return profit;
@@ -59,6 +58,7 @@ public class TravelHandler
 
         if (!fromValid || !toValid)
         {
+            //TODO: ExceptionFilter
             throw new KeyNotFoundException("Could not find these cities");
         }
 
