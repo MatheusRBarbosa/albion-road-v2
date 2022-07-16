@@ -1,3 +1,4 @@
+using AlbionRoad.API.Exceptions;
 using AlbionRoad.Resources.Configs;
 using AlbionRoad.Application.Handlers;
 using AlbionRoad.Domain.Interfaces.Services;
@@ -37,7 +38,10 @@ builder.Services.AddScoped<ICacheService, RedisService>();
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddControllers();
+builder.Services.AddControllers(o =>
+{
+    o.Filters.Add(new ExceptionFilter());
+});
 builder.Services.AddHttpClient();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

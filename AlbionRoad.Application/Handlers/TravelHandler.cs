@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 
 using AlbionRoad.Domain.Models;
 using AlbionRoad.Domain.Enums;
+using AlbionRoad.Domain.Exceptions;
 using AlbionRoad.Domain.Interfaces.Services;
 using AlbionRoad.Resources.Configs;
 
@@ -65,7 +66,7 @@ public class TravelHandler
     {
         if (from == to)
         {
-            throw new Exception("From and To must be different");
+            throw new InvalidRouteException("From and To must be different");
         }
 
         var fromValid = Enum.IsDefined(typeof(CityEnum), from);
@@ -73,7 +74,6 @@ public class TravelHandler
 
         if (!fromValid || !toValid)
         {
-            //TODO: ExceptionFilter
             throw new KeyNotFoundException("Could not find these cities");
         }
 
