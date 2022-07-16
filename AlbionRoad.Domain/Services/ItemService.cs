@@ -38,21 +38,34 @@ public class ItemService : IItemService
         Parallel.For(0, pricesFrom.Count, i =>
         {
             var priceFrom = pricesFrom[i];
-            var priceTo = pricesTo.FirstOrDefault(to => to.ItemId == priceFrom.ItemId);
-            if (priceTo != null)
+            if (priceFrom.BuyPriceMin > 5 && priceFrom.SellPriceMin > 5)
             {
-                var profitValue = priceTo.SellPriceMin - priceFrom.SellPriceMin;
-                var profit = new Profit
-                {
-                    ProfitValue = profitValue,
-                    BuyValue = priceFrom.SellPriceMin,
-                    SellValue = priceTo.SellPriceMin,
-                    ItemId = priceFrom.ItemId,
-                    From = route.From.Name,
-                    To = route.To.Name
-                };
+                var priceTo = pricesTo.FirstOrDefault(to =>
+                    to.ItemId == priceFrom.ItemId &&
+                    to.Quality == priceFrom.Quality &&
+                    to.BuyPriceMin > 5 &&
+                    to.SellPriceMin > 5
+                );
 
-                profits.Add(profit);
+                if (priceTo != null)
+                {
+                    var profitValue = priceTo.SellPriceMin - priceFrom.SellPriceMin;
+                    if (profitValue < 50000)
+                    {
+                        var profit = new Profit
+                        {
+                            ProfitValue = profitValue,
+                            BuyValue = priceFrom.SellPriceMin,
+                            SellValue = priceTo.SellPriceMin,
+                            ItemQuality = priceTo.Quality,
+                            ItemId = priceFrom.ItemId,
+                            From = route.From.Name,
+                            To = route.To.Name
+                        };
+
+                        profits.Add(profit);
+                    }
+                }
             }
         });
 
