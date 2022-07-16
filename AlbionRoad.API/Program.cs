@@ -17,13 +17,18 @@ builder.Services.Configure<RedisSettings>(redisSection);
 
 var redisSettings = redisSection.Get<RedisSettings>();
 
-// Redis TODO: Ajustar url do redis
-builder.Services.AddStackExchangeRedisCache(opts =>
+builder.Services.AddStackExchangeRedisCache(o =>
 {
-    opts.Configuration = $"localhost:6379";
+    o.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions
+    {
+        EndPoints =
+        {
+            { redisSettings.Host, redisSettings.Port }
+        }
+    };
 });
 
-builder.Services.AddDistributedMemoryCache();
+builder.Services.AddMemoryCache();
 
 // DI
 builder.Services.AddScoped<TravelHandler>();

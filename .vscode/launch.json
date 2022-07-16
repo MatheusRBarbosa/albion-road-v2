@@ -13,10 +13,6 @@
             "args": [],
             "cwd": "${workspaceFolder}/AlbionRoad.API",
             "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             },
@@ -24,29 +20,6 @@
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "ASPNETCORE_URLS": "http://localhost:5000/"
             }
-        },
-        {
-            "name": ".NET Core Watch",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "watch",
-            "program": "${workspaceFolder}/AlbionRoad.API/bin/Debug/net6.0/AlbionRoad.API.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/AlbionRoad.API",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
-            }
-        },
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach"
-        },
-        
+        }
     ]
 }
