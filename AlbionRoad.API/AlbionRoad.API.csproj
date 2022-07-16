@@ -17,6 +17,7 @@
     <ProjectReference Include="..\AlbionRoad.Application\AlbionRoad.Application.csproj" />
     <ProjectReference Include="..\AlbionRoad.Domain\AlbionRoad.Domain.csproj" />
     <ProjectReference Include="..\AlbionRoad.Resources\AlbionRoad.Resources.csproj" />
+    <ProjectReference Include="..\AlbionRoad.Infra.Services\AlbionRoad.Infra.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,48 +11,63 @@ namespace AlbionRoad.Application.Handlers;
 
 public class TravelHandler
 {
-    private IMapper mapper;
-    private AlbionData albionData;
-    private IHttpClientFactory httpFactory;
-    private IItemService itemService;
+    private readonly IMapper mapper;
+    private readonly AlbionDataSettings albionData;
+    private readonly IHttpClientFactory httpFactory;
+    private readonly IItemService itemService;
+    private readonly ICacheService cacheService;
 
     public TravelHandler(
         IMapper mapper,
-        IOptions<AlbionData> albionData,
+        IOptions<AlbionDataSettings> albionData,
         IHttpClientFactory httpFactory,
-        IItemService itemService
+        IItemService itemService,
+        ICacheService cacheService
     )
     {
         this.mapper = mapper;
         this.albionData = albionData.Value;
         this.httpFactory = httpFactory;
         this.itemService = itemService;
+        this.cacheService = cacheService;
     }
 
     public async Task<IList<Profit>> Travel(int from, int to)
     {
         var route = GetRoute(from, to);
 
-        var http = httpFactory.CreateClient();
-        var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
-        var tasks = new List<Task<List<Price>>>();
+        IList<Price>? prices = new List<Price>();
 
-        Parallel.ForEach(itemsQuery, item =>
+        var profits = await cacheService.GetProfitsAsync(route);
+        if (profits != null)
         {
-            var endpoint = $"{albionData.BasePath}/{albionData.Prices}/{item}?{route.ToUrlQueryParam}";
-            tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
-        });
+            return profits;
+        }
 
-        var response = (await Task.WhenAll(tasks))
-            .SelectMany(x => x)
-            .ToList();
+        prices = await cacheService.GetPricesAsync();
+        if (prices != null)
+        {
+            profits = itemService.GetItemsProfit(prices, route);
+            cacheService.SetItemsProfit(route, profits);
+            return profits;
+        }
 
-        var profit = itemService.GetItemsProfit(response, route);
-        return profit;
+        prices = await GetPricesFromHttp();
+        cacheService.SetRawPrices(prices);
+
+        profits = itemService.GetItemsProfit(prices, route);
+        cacheService.SetItemsProfit(route, profits);
+
+        return profits;
     }
 
     private Route GetRoute(int from, int to)
     {
+        if (from == to)
+        {
+            throw new Exception("From and To must be different");
+        }
+
         var fromValid = Enum.IsDefined(typeof(CityEnum), from);
         var toValid = Enum.IsDefined(typeof(CityEnum), to);
 
@@ -66,5 +81,24 @@ public class TravelHandler
         var toCity = new City { Id = to, Name = Enum.GetName((CityEnum)to)! };
 
         return new Route { From = fromCity, To = toCity };
+    }
+
+    private async Task<IList<Price>> GetPricesFromHttp()
+    {
+        var http = httpFactory.CreateClient();
+        var itemsQuery = itemService.GetItemQueryParams(albionData.MaxBactchSize);
+        var tasks = new List<Task<List<Price>>>();
+
+        Parallel.ForEach(itemsQuery, item =>
+        {
+            var endpoint = $"{albionData.BasePath}/{albionData.Prices}/{item}";
+            tasks.Add(http.GetFromJsonAsync<List<Price>>(endpoint)!);
+        });
+
+        var prices = (await Task.WhenAll(tasks))
+            .SelectMany(x => x)
+            .ToList();
+
+        return prices;
     }
 }

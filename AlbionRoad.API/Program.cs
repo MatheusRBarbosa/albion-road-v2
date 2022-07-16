@@ -2,6 +2,7 @@ using AlbionRoad.Resources.Configs;
 using AlbionRoad.Application.Handlers;
 using AlbionRoad.Domain.Interfaces.Services;
 using AlbionRoad.Domain.Services;
+using AlbionRoad.Infra.Services.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,7 @@ builder.Services.Configure<RedisSettings>(redisSection);
 
 var redisSettings = redisSection.Get<RedisSettings>();
 
-// Redis
+// Redis TODO: Ajustar url do redis
 builder.Services.AddStackExchangeRedisCache(opts =>
 {
     opts.Configuration = $"localhost:6379";
@@ -27,6 +28,7 @@ builder.Services.AddDistributedMemoryCache();
 // DI
 builder.Services.AddScoped<TravelHandler>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ICacheService, RedisService>();
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
