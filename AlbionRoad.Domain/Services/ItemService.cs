@@ -41,7 +41,7 @@ public class ItemService : IItemService
             var priceTo = pricesTo.FirstOrDefault(to => to.ItemId == priceFrom.ItemId);
             if (priceTo != null)
             {
-                var profitValue = priceFrom.SellPriceMin - priceTo.SellPriceMin;
+                var profitValue = priceTo.SellPriceMin - priceFrom.SellPriceMin;
                 var profit = new Profit
                 {
                     ProfitValue = profitValue,
